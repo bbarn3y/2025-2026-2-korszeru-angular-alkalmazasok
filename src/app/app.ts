@@ -5,7 +5,8 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.less'
+  styleUrl: './app.less',
+  standalone: true,
 })
 export class App {
   protected readonly title = signal('korszeru-angular-25-26-2');
