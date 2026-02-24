@@ -5,8 +5,9 @@ import {NzButtonModule} from 'ng-zorro-antd/button';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {delay, finalize, of} from 'rxjs';
+import {delay, finalize, of, tap} from 'rxjs';
 import {ClientService} from '../_services/client.service';
+import {UserService} from '../_services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -30,6 +31,11 @@ export class Login {
   private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly clientService = inject(ClientService);
   private readonly formBuilder = inject(NonNullableFormBuilder);
+  private readonly userService = inject(UserService);
+
+  constructor() {
+    console.log('login component constructor', this.userService.isLoggedIn(), this.userService.token())
+  }
 
   // isLoading: boolean = false;
   loading = signal(false);
@@ -60,9 +66,13 @@ export class Login {
     //   })
 
     this.clientService.login()
-      .pipe(finalize(() => this.loading.set(false)))
+      .pipe(
+        tap((response) =>  this.userService.saveToken(response.token)),
+        finalize(() => this.loading.set(false)),
+      )
       .subscribe((loginResponse) => {
         console.log(loginResponse);
+        this.userService.saveToken(loginResponse.token);
       });
 
   }
