@@ -19,7 +19,7 @@
     <button nz-button
             class="login-form-button login-form-margin"
             [disabled]="!loginForm.valid"
-            [nzLoading]="isLoading"
+            [nzLoading]="loading()"
             nzType="primary">Log in</button>
   </form>
 </nz-card>
