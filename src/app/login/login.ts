@@ -8,6 +8,8 @@ import {FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators} from
 import {delay, finalize, of, tap} from 'rxjs';
 import {ClientService} from '../_services/client.service';
 import {UserService} from '../_services/user.service';
+import {routeToLobby} from '../_helpers/routing.helper';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -31,10 +33,11 @@ export class Login {
   private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly clientService = inject(ClientService);
   private readonly formBuilder = inject(NonNullableFormBuilder);
+  private readonly router: Router = inject(Router);
   private readonly userService = inject(UserService);
 
   constructor() {
-    console.log('login component constructor', this.userService.isLoggedIn(), this.userService.token())
+    // console.log('login component constructor', this.userService.isLoggedIn(), this.userService.token())
   }
 
   // isLoading: boolean = false;
@@ -73,6 +76,7 @@ export class Login {
       .subscribe((loginResponse) => {
         console.log(loginResponse);
         this.userService.saveToken(loginResponse.token);
+        routeToLobby(this.router);
       });
 
   }

@@ -20,6 +20,9 @@
             class="login-form-button login-form-margin"
             [disabled]="!loginForm.valid"
             [nzLoading]="loading()"
-            nzType="primary">Log in</button>
+            nzType="primary">
+      <nz-icon nzType="login" nzTheme="outline" />
+      Log in
+    </button>
   </form>
 </nz-card>
