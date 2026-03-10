@@ -1,0 +1,15 @@
+
+@let characterListLength = mockCharacters.length;
+
+<!--
+<nz-card *ngFor="let character of mockCharacters; let index = index"
+         [nzTitle]="character.name + '_' + index"></nz-card>
+-->
+@if (characterListLength === 0) {
+  <nz-empty nzNotFoundContent="The character list is empty, please help by extending it!"></nz-empty>
+} @else {
+  @for (character of mockCharacters; track character.name; let index = $index) {
+    <nz-card [nzTitle]="character.name + '_' + index"></nz-card>
+  }
+}
+

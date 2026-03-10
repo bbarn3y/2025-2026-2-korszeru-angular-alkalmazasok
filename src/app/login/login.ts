@@ -10,6 +10,7 @@ import {ClientService} from '../_services/client.service';
 import {UserService} from '../_services/user.service';
 import {routeToLobby} from '../_helpers/routing.helper';
 import {Router} from '@angular/router';
+import {APP_CONFIG} from '../_token/configuration.token';
 
 @Component({
   selector: 'app-login',
@@ -32,6 +33,7 @@ export class Login {
 
   private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly clientService = inject(ClientService);
+  private readonly config = inject(APP_CONFIG);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly router: Router = inject(Router);
   private readonly userService = inject(UserService);
@@ -60,6 +62,24 @@ export class Login {
     // this.isLoading = true;
     this.loading.set(true);
 
+    const executeLogin = this.config.useHttp
+      ? this.clientService.login()
+      : of({ token: 'My little token' });
+
+    executeLogin
+      .pipe(
+        tap((response) =>  this.userService.saveToken(response.token)),
+        finalize(() => this.loading.set(false)),
+      )
+      .subscribe({
+        next: (response) => {
+          routeToLobby(this.router);
+        },
+        error: (err) => {
+          console.error('Login failed', err);
+        }
+      });
+
     // of({ token: 'My little token' })
     //   .pipe(delay(1000))
     //   .subscribe((response: { token: string }) => {
@@ -68,16 +88,16 @@ export class Login {
     //     // this.cdr.markForCheck();
     //   })
 
-    this.clientService.login()
-      .pipe(
-        tap((response) =>  this.userService.saveToken(response.token)),
-        finalize(() => this.loading.set(false)),
-      )
-      .subscribe((loginResponse) => {
-        console.log(loginResponse);
-        this.userService.saveToken(loginResponse.token);
-        routeToLobby(this.router);
-      });
+    // this.clientService.login()
+    //   .pipe(
+    //     tap((response) =>  this.userService.saveToken(response.token)),
+    //     finalize(() => this.loading.set(false)),
+    //   )
+    //   .subscribe((loginResponse) => {
+    //     console.log(loginResponse);
+    //     this.userService.saveToken(loginResponse.token);
+    //     routeToLobby(this.router);
+    //   });
 
   }
 
