@@ -1,0 +1,16 @@
+@let characterValue = character();
+
+@if (characterValue) {
+  <nz-card style="width:300px;" [nzCover]="coverTemplate" [nzActions]="[actionEdit, actionDelete]">
+    <nz-card-meta [nzTitle]="characterValue.name | name" [nzDescription]="characterValue.characterClass" />
+  </nz-card>
+  <ng-template #coverTemplate>
+    <img [alt]="characterValue.name" [src]="characterValue.image" />
+  </ng-template>
+  <ng-template #actionEdit>
+    <nz-icon nzType="edit" />
+  </ng-template>
+  <ng-template #actionDelete>
+    <nz-icon nzType="delete" />
+  </ng-template>
+}

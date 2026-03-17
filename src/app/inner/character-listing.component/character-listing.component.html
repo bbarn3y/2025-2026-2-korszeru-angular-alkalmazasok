@@ -1,5 +1,5 @@
 
-@let characterListLength = mockCharacters.length;
+@let characterListLength = characters().length;
 
 <!--
 <nz-card *ngFor="let character of mockCharacters; let index = index"
@@ -8,8 +8,19 @@
 @if (characterListLength === 0) {
   <nz-empty nzNotFoundContent="The character list is empty, please help by extending it!"></nz-empty>
 } @else {
-  @for (character of mockCharacters; track character.name; let index = $index) {
+  @for (character of characters(); track character.name; let index = $index) {
+    <!--
     <nz-card [nzTitle]="character.name + '_' + index"></nz-card>
+    -->
+    <app-character-card [character]="character"></app-character-card>
   }
 }
 
+<!--
+<ng-template #testTpl let-nombre="name">
+  Hi {{nombre}}!
+</ng-template>
+<ng-container *ngTemplateOutlet="testTpl; context: { name: 'Máté' }"></ng-container>
+<ng-container *ngTemplateOutlet="testTpl; context: { name: 'Abigél' }"></ng-container>
+<ng-container *ngTemplateOutlet="testTpl; context: { name: 'Hanna' }"></ng-container>
+-->

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
+import {CharacterService} from '../../_services/character.service';
 
 @Component({
   selector: 'app-character-listing',
@@ -6,15 +7,24 @@ import { Component } from '@angular/core';
   templateUrl: './character-listing.component.html',
   styleUrl: './character-listing.component.less',
 })
-export class CharacterListingComponent {
+export class CharacterListingComponent implements OnInit {
 
-  readonly mockCharacters: { name: string }[] = [
-    {
-      name: 'Mage Máté'
-    },
-    {
-      name: 'Archer Ármin'
-    }
-  ]
+  private readonly characterService = inject(CharacterService);
 
+  readonly characters = this.characterService.characters;
+
+  ngOnInit() {
+
+  }
+
+  // readonly mockCharacters: { name: string }[] = [
+  //   {
+  //     name: 'Mage Máté'
+  //   },
+  //   {
+  //     name: 'Archer Ármin'
+  //   }
+  // ]
+
+  protected readonly name = name;
 }
