@@ -28,16 +28,16 @@ export class CharacterService {
   }
 
   private getCharactersFromLocalStorage(): Character[] {
-    return [
-      new Character('Mage Máté', '/assets/classes/mage.webp', CharacterClass.MAGE, 4),
-      new Character('Rogue Rozália', '/assets/classes/rogue.webp', CharacterClass.ROGUE, 7),
-      new Character('Warrior Vazul', '/assets/classes/warrior.webp', CharacterClass.WARRIOR, 10),
-    ];
+    // return [
+    //   new Character('Mage Máté', '/assets/classes/mage.webp', CharacterClass.MAGE, 4),
+    //   new Character('Rogue Rozália', '/assets/classes/rogue.webp', CharacterClass.ROGUE, 7),
+    //   new Character('Warrior Vazul', '/assets/classes/warrior.webp', CharacterClass.WARRIOR, 10),
+    // ];
 
-    // const storageString = localStorage.getItem(this.CHARACTERS_KEY);
-    // return storageString
-    //   ? JSON.parse(storageString) as Character[]
-    //   : [];
+    const storageString = localStorage.getItem(this.CHARACTERS_KEY);
+    return storageString
+      ? JSON.parse(storageString) as Character[]
+      : [];
   }
 
   private saveCharactersToStorage(characters: Character[]): void {

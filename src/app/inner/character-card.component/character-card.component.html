@@ -8,7 +8,7 @@
     <img [alt]="characterValue.name" [src]="characterValue.image" />
   </ng-template>
   <ng-template #actionEdit>
-    <nz-icon nzType="edit" />
+    <nz-icon (click)="editCharacter()" nzType="edit" />
   </ng-template>
   <ng-template #actionDelete>
     <nz-icon nzType="delete" />

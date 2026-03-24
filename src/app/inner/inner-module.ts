@@ -9,6 +9,13 @@ import {NzEmptyModule} from 'ng-zorro-antd/empty';
 import {CharacterCardComponent} from './character-card.component/character-card.component';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NamePipe} from '../_pipes/name-pipe';
+import {CharacterEditorComponent} from './character-editor.component/character-editor.component';
+import {NzModalModule} from 'ng-zorro-antd/modal';
+import {NzFormModule} from 'ng-zorro-antd/form';
+import {ReactiveFormsModule} from '@angular/forms';
+import {NzInputModule} from 'ng-zorro-antd/input';
+import {NzSelectModule} from 'ng-zorro-antd/select';
+import {NzInputNumberModule} from 'ng-zorro-antd/input-number';
 
 export const routes: Routes = [
   {
@@ -24,6 +31,7 @@ export const routes: Routes = [
 @NgModule({
   declarations: [
     CharacterCardComponent,
+    CharacterEditorComponent,
     CharacterListingComponent,
     Lobby,
     NamePipe
@@ -33,8 +41,14 @@ export const routes: Routes = [
     NzButtonModule,
     NzCardModule,
     NzEmptyModule,
+    NzFormModule,
     NzIconModule,
-    RouterModule.forChild(routes)
+    NzInputModule,
+    NzInputNumberModule,
+    NzModalModule,
+    ReactiveFormsModule,
+    RouterModule.forChild(routes),
+    NzSelectModule
   ],
   exports: []
 })
