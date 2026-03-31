@@ -1,7 +1,8 @@
-import {Component, inject, input, Input} from '@angular/core';
-import {Character} from '../../_models/character.model';
+import {Component, inject, input, Input, output} from '@angular/core';
+import {Character, CharacterClass} from '../../_models/character.model';
 import {CharacterEditorComponent} from '../character-editor.component/character-editor.component';
 import {NzModalService} from 'ng-zorro-antd/modal';
+import {CharacterService} from '../../_services/character.service';
 
 @Component({
   selector: 'app-character-card',
@@ -11,8 +12,11 @@ import {NzModalService} from 'ng-zorro-antd/modal';
 })
 export class CharacterCardComponent {
   // @Input() character!: Character;
-  character = input<Character>();
+  character = input.required<Character>();
 
+  characterSelected = output<Character>();
+
+  public readonly characterService = inject(CharacterService);
   private readonly nzModalService = inject(NzModalService);
 
   editCharacter() {

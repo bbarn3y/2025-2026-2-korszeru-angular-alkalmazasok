@@ -3,7 +3,7 @@ import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from '@angul
 import {Character, CharacterClass} from '../../_models/character.model';
 import {CharacterService} from '../../_services/character.service';
 import {ValidatorService} from '../../_services/validator.service';
-import {NZ_MODAL_DATA} from 'ng-zorro-antd/modal';
+import {NZ_MODAL_DATA, NzModalRef} from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-character-editor.component',
@@ -21,6 +21,7 @@ export class CharacterEditorComponent {
 
   private readonly characterService = inject(CharacterService);
   private readonly fb = inject(NonNullableFormBuilder);
+  private readonly nzModalRef = inject(NzModalRef);
   private readonly nzModalData: { character?: Character } = inject(NZ_MODAL_DATA, { optional: true });
   private readonly validatorService = inject(ValidatorService);
 
@@ -58,6 +59,8 @@ export class CharacterEditorComponent {
     } else {
       this.characterService.addCharacter(character);
     }
+
+    this.nzModalRef.close();
   }
 
   protected readonly CharacterClass = CharacterClass;

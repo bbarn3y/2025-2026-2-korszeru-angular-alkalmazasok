@@ -16,6 +16,8 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzInputNumberModule} from 'ng-zorro-antd/input-number';
+import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
+import {SelectedCharacterDirective} from '../_directives/selected-character.directive';
 
 export const routes: Routes = [
   {
@@ -34,7 +36,8 @@ export const routes: Routes = [
     CharacterEditorComponent,
     CharacterListingComponent,
     Lobby,
-    NamePipe
+    NamePipe,
+    SelectedCharacterDirective
   ],
   imports: [
     CommonModule,
@@ -46,9 +49,10 @@ export const routes: Routes = [
     NzInputModule,
     NzInputNumberModule,
     NzModalModule,
+    NzPopconfirmDirective,
+    NzSelectModule,
     ReactiveFormsModule,
-    RouterModule.forChild(routes),
-    NzSelectModule
+    RouterModule.forChild(routes)
   ],
   exports: []
 })

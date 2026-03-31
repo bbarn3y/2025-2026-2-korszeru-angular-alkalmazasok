@@ -1,5 +1,10 @@
+<input #searchInput
+       nz-input
+       placeholder="Search characters..."
+       [value]="searchQuery()"
+       (input)="searchQuery.set(searchInput.value.trim())"/>
 
-@let characterListLength = characters().length;
+@let characterListLength = filteredCharacters().length;
 
 <!--
 <nz-card *ngFor="let character of mockCharacters; let index = index"
@@ -8,11 +13,15 @@
 @if (characterListLength === 0) {
   <nz-empty nzNotFoundContent="The character list is empty, please help by extending it!"></nz-empty>
 } @else {
-  @for (character of characters(); track character.name; let index = $index) {
+  @for (character of filteredCharacters(); track character.name; let index = $index) {
     <!--
     <nz-card [nzTitle]="character.name + '_' + index"></nz-card>
     -->
-    <app-character-card [character]="character"></app-character-card>
+    <app-character-card appSelectedCharacter
+                        [color]="ClassDetails[character.characterClass].color"
+                        [selected]="selectedCharacter()?.id === character.id"
+                        [character]="character"
+                        (characterSelected)="selectedCharacter.set($event)"></app-character-card>
   }
 }
 
