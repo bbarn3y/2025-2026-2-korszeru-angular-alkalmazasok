@@ -1,0 +1,9 @@
+{
+  "LOBBY": {
+    "CHANGE_LANGUAGE": "Change language",
+    "CHARACTER": {
+      "CREATE": "Create a character"
+    },
+    "LOGOUT": "Log out"
+  }
+}

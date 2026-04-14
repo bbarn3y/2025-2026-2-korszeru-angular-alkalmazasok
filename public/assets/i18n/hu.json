@@ -1,0 +1,9 @@
+{
+  "LOBBY": {
+    "CHANGE_LANGUAGE": "Nyelv választása",
+    "CHARACTER": {
+      "CREATE": "Karakter létrehozása"
+    },
+    "LOGOUT": "Kijelentkezés"
+  }
+}

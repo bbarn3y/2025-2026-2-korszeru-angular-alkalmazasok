@@ -18,6 +18,8 @@ import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzInputNumberModule} from 'ng-zorro-antd/input-number';
 import {NzPopconfirmDirective} from 'ng-zorro-antd/popconfirm';
 import {SelectedCharacterDirective} from '../_directives/selected-character.directive';
+import {TranslateModule} from '@ngx-translate/core';
+import {NzDropdownModule} from 'ng-zorro-antd/dropdown';
 
 export const routes: Routes = [
   {
@@ -43,6 +45,7 @@ export const routes: Routes = [
     CommonModule,
     NzButtonModule,
     NzCardModule,
+    NzDropdownModule,
     NzEmptyModule,
     NzFormModule,
     NzIconModule,
@@ -52,7 +55,8 @@ export const routes: Routes = [
     NzPopconfirmDirective,
     NzSelectModule,
     ReactiveFormsModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    TranslateModule
   ],
   exports: []
 })

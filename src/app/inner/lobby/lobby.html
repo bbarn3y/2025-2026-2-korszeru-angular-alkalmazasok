@@ -1,5 +1,15 @@
-<button nz-button (click)="logout()">Log out</button>
+<button nz-button (click)="logout()">{{ 'LOBBY.LOGOUT' | translate }}</button>
 
-<button nz-button (click)="openCharacterEditor()">Create a character</button>
+<button nz-button (click)="openCharacterEditor()">{{ 'LOBBY.CHARACTER.CREATE' | translate }}</button>
+
+<div>
+  <button nz-button nz-dropdown [nzDropdownMenu]="languageMenu">{{ 'LOBBY.CHANGE_LANGUAGE' | translate }}</button>
+  <nz-dropdown-menu #languageMenu="nzDropdownMenu">
+    <ul nz-menu nzSelectable>
+      <li nz-menu-item (click)="translateService.use('en')">EN</li>
+      <li nz-menu-item (click)="translateService.use('hu')">HU</li>
+    </ul>
+  </nz-dropdown-menu>
+</div>
 
 <app-character-listing></app-character-listing>

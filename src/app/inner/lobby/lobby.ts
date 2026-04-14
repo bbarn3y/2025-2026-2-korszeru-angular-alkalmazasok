@@ -4,6 +4,7 @@ import {routeToLogin} from '../../_helpers/routing.helper';
 import {Router} from '@angular/router';
 import {NzModalService} from 'ng-zorro-antd/modal';
 import {CharacterEditorComponent} from '../character-editor.component/character-editor.component';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-lobby',
@@ -15,6 +16,7 @@ export class Lobby {
 
   private readonly nzModalService = inject(NzModalService);
   private readonly router: Router = inject(Router);
+  readonly translateService: TranslateService = inject(TranslateService);
   private readonly userService: UserService = inject(UserService);
 
   logout() {
