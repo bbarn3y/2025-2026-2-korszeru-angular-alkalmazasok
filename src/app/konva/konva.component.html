@@ -1,3 +1,23 @@
+<nz-card>
+  <ng-template #editorModeTemplate
+               let-icon="buttonIcon"
+               let-mode="editorMode">
+    <button nz-button
+            [nzType]="editorMode === mode ? 'primary' : 'default'"
+            (click)="editorMode = mode">
+      <span nz-icon [nzType]="icon"></span>
+    </button>
+  </ng-template>
+  <ng-container *ngTemplateOutlet="editorModeTemplate; context: { buttonIcon: 'car', editorMode: EditorMode.CAR}"></ng-container>
+  <ng-container *ngTemplateOutlet="editorModeTemplate; context: { buttonIcon: 'home', editorMode: EditorMode.HOUSE}"></ng-container>
+  <ng-container *ngTemplateOutlet="editorModeTemplate; context: { buttonIcon: 'select', editorMode: EditorMode.SELECT}"></ng-container>
+</nz-card>
 
+<nz-dropdown-menu #menu>
+  <ul nz-menu>
+    <li nz-menu-item (click)="deleteShape()">Delete</li>
+    <li nz-menu-item (click)="moveToOrigo()">Move to origo</li>
+  </ul>
+</nz-dropdown-menu>
 
 <div #konvaContainer></div>
