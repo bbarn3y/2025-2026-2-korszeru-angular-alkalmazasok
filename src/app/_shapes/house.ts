@@ -20,18 +20,29 @@ export class House implements CustomShape {
     this.y = y;
   }
 
-  addShapeListeners(): void {
+  addShapeListeners(group: Konva.Group): void {
+    group.off('mouseenter');
+    group.off('mouseleave');
+    group.on('mouseenter', () => {
+      group.scale({ x: 1.2, y: 1.5})
+    });
+    group.on('mouseleave', () => {
+      group.scale( { x: 1, y: 1 });
+    })
   }
 
-  draw(layer: Konva.Layer): void {
+  draw(layer: Konva.Layer): Konva.Group {
     const shape = this.shape();
     layer.add(shape);
+    return shape;
   }
 
   shape(): Konva.Group {
     const group = new Konva.Group({
       x: this.x,
       y: this.y,
+      width: this.width,
+      height: this.height,
       draggable: this.draggable,
       shapeType: this.shapeType
     });
@@ -60,6 +71,8 @@ export class House implements CustomShape {
     })
 
     group.add(head, body);
+
+    this.addShapeListeners(group);
 
     return group;
   }

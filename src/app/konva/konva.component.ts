@@ -4,9 +4,12 @@ import {NgTemplateOutlet} from '@angular/common';
 import {NzButtonModule} from 'ng-zorro-antd/button';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NzCardModule} from 'ng-zorro-antd/card';
-import {EditorMode} from '../_models/konva';
+import {EditorMode, ShapeType} from '../_models/konva';
 import {House} from '../_shapes/house';
 import {NzContextMenuService, NzDropdownMenuComponent, NzDropdownModule} from 'ng-zorro-antd/dropdown';
+import {Car} from '../_shapes/car';
+import {NzRadioComponent, NzRadioGroupComponent} from 'ng-zorro-antd/radio';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-konva',
@@ -17,6 +20,9 @@ import {NzContextMenuService, NzDropdownMenuComponent, NzDropdownModule} from 'n
     NzCardModule,
     NzIconModule,
     NzDropdownModule,
+    NzRadioGroupComponent,
+    NzRadioComponent,
+    FormsModule,
   ],
   templateUrl: './konva.component.html',
   styleUrl: './konva.component.less',
@@ -24,13 +30,14 @@ import {NzContextMenuService, NzDropdownMenuComponent, NzDropdownModule} from 'n
 export class KonvaComponent implements AfterViewInit {
   private readonly nzContextMenuService: NzContextMenuService = inject(NzContextMenuService);
 
-  contextMenuEl = viewChild.required<ElementRef<NzDropdownMenuComponent>>('menu');
+  contextMenuEl = viewChild.required<NzDropdownMenuComponent>('menu');
   konvaContainer = viewChild.required<ElementRef<HTMLDivElement>>('konvaContainer');
 
   editorMode: EditorMode = EditorMode.SELECT;
   leftClickedShape: Konva.Shape | Konva.Group | null = null;
   rightClickedShape: Konva.Shape | Konva.Group | null = null;
   selectedLayer?: Konva.Layer;
+  selectedLayerIndex = 0;
   stage?: Konva.Stage;
   transformer?: Konva.Transformer;
 
@@ -84,10 +91,26 @@ export class KonvaComponent implements AfterViewInit {
 
         switch (this.editorMode) {
           case EditorMode.CAR:
+            if (pointerPosition) {
+              const car = new Car(
+                (pointerPosition.x - this.stage.x()) / this.stage.scale().x,
+                (pointerPosition.y - this.stage.y()) / this.stage.scale().y,
+                50,
+                50,
+                false
+              )
+              console.log('car', car);
+              car.draw(this.selectedLayer);
+            }
             break;
           case EditorMode.HOUSE:
             if (pointerPosition) {
-              const house = new House(pointerPosition.x, pointerPosition.y, 50, 75, true);
+              const house = new House(
+                (pointerPosition.x - this.stage.x()) / this.stage.scale().x,
+                (pointerPosition.y - this.stage.y()) / this.stage.scale().y,
+                50,
+                75,
+                true);
               house.draw(this.selectedLayer);
             }
             break;
@@ -108,12 +131,42 @@ export class KonvaComponent implements AfterViewInit {
         }
         this.rightClickedShape = this.getClickTarget(event.target);
 
-        // @todo Fix!
         if (this.rightClickedShape) {
           this.nzContextMenuService.create({
-            x: event.target.x(),
-            y: event.target.y(),
-          }, this.contextMenuEl().nativeElement)
+            x: event.target.getClientRect().x,
+            y: event.target.getClientRect().y,
+          }, this.contextMenuEl())
+        }
+      });
+
+      this.stage.on('wheel', (event) => {
+        event.evt.preventDefault();
+        if (!this.stage) {
+          return;
+        }
+
+        let currentScale = this.stage.scale().x;
+        let pendingScaleBy = 1.05;
+        let direction = event.evt.deltaY;
+        let pointerPosition = this.stage.getPointerPosition();
+
+        if (pointerPosition) {
+          let mousePointsTo = {
+            x: (pointerPosition.x - this.stage.x()) / currentScale,
+            y: (pointerPosition.y - this.stage.y()) / currentScale,
+          };
+
+          const newScale = direction < 0 ? currentScale * pendingScaleBy : currentScale / pendingScaleBy;
+
+          this.stage.position({
+            x: pointerPosition.x - mousePointsTo.x * newScale,
+            y: pointerPosition.y - mousePointsTo.y * newScale,
+          });
+
+          this.stage.scale({
+            x: newScale,
+            y: newScale
+          });
         }
       });
     }
@@ -132,11 +185,64 @@ export class KonvaComponent implements AfterViewInit {
   }
 
   deleteShape() {
-
+    if (this.rightClickedShape) {
+      this.rightClickedShape.destroy();
+      this.transformer?.nodes([]);
+    }
   }
 
-  moveToOrigo() {
+  makeMeRed(shape?: Konva.Group | Konva.Shape | null) {
+    if (!shape) return;
 
+    if (shape instanceof Konva.Group) {
+      shape.children.forEach(this.makeMeRed);
+    } else {
+      shape.to({
+        fill: 'red',
+        duration: 1,
+        easing: Konva.Easings.Linear
+      })
+    }
+  }
+
+  moveToClosestHouse() {
+
+    if (!this.stage || !this.rightClickedShape) return;
+
+    // Find all House nodes
+    const houses = this.stage
+      .find('Group')
+      .filter((node) => node.getAttr('shapeType') === ShapeType.HOUSE)
+
+    if (!houses.length) return;
+
+    const clickedCarPosition = this.rightClickedShape?.position();
+
+    if (!clickedCarPosition) return;
+
+    const nearestHouse = houses
+      .sort((a, b) => {
+        const aPos = a.position();
+        const bPos = b.position();
+        const distA = Math.hypot(aPos.x - clickedCarPosition.x, aPos.y - clickedCarPosition.y);
+        const distB = Math.hypot(bPos.x - clickedCarPosition.x, bPos.y - clickedCarPosition.y);
+
+        return distA - distB;
+      })[0];
+
+    const nearestHousePosition = nearestHouse.position();
+
+    this.rightClickedShape.to({
+      x: nearestHousePosition.x,
+      y: nearestHousePosition.y + (nearestHouse.getAttr('height') ?? 0) + this.rightClickedShape.height() + 10,
+      duration: 2,
+      easing: Konva.Easings.EaseIn
+    })
+  }
+
+  selectedLayerIndexChanged(layerIndex: number) {
+    if (!this.stage) return;
+    this.selectedLayer = this.stage.getLayers()[layerIndex];
   }
 
   protected readonly EditorMode = EditorMode;

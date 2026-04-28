@@ -1,4 +1,10 @@
 <nz-card>
+  <nz-radio-group [(ngModel)]="selectedLayerIndex"
+                  (ngModelChange)="selectedLayerIndexChanged($event)">
+    <label nz-radio-button [nzValue]="0">1</label>
+    <label nz-radio-button [nzValue]="1">2</label>
+  </nz-radio-group>
+
   <ng-template #editorModeTemplate
                let-icon="buttonIcon"
                let-mode="editorMode">
@@ -16,7 +22,8 @@
 <nz-dropdown-menu #menu>
   <ul nz-menu>
     <li nz-menu-item (click)="deleteShape()">Delete</li>
-    <li nz-menu-item (click)="moveToOrigo()">Move to origo</li>
+    <li nz-menu-item (click)="moveToClosestHouse()">Move to nearest house</li>
+    <li nz-menu-item (click)="makeMeRed(rightClickedShape)">Redden</li>
   </ul>
 </nz-dropdown-menu>
 

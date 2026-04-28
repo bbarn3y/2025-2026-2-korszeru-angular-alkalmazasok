@@ -10,7 +10,7 @@ export interface CustomShape {
   height: number;
   draggable: boolean;
 
-  addShapeListeners(): void;
-  draw(layer: Konva.Layer): void;
+  addShapeListeners(group: Konva.Group): void;
+  draw(layer: Konva.Layer): Konva.Group;
   shape(): Konva.Group;
 }
