@@ -84,18 +84,22 @@ export class Car implements CustomShape {
         return group;
     }
 
+    static addShapeListeners(group: Konva.Group): void {
+      // Optional: namespace your listeners (recommended)
+      group.off('.custom');
+
+      group.on('mouseenter.custom', () => {
+        document.body.style.cursor = 'pointer';
+        group.scale({ x: 1.05, y: 1.05 });
+      });
+
+      group.on('mouseleave.custom', () => {
+        document.body.style.cursor = 'default';
+        group.scale({ x: 1, y: 1 });
+      });
+    }
+
     addShapeListeners(group: Konva.Group): void {
-        // Optional: namespace your listeners (recommended)
-        group.off('.custom');
-
-        group.on('mouseenter.custom', () => {
-            document.body.style.cursor = 'pointer';
-            group.scale({ x: 1.05, y: 1.05 });
-        });
-
-        group.on('mouseleave.custom', () => {
-            document.body.style.cursor = 'default';
-            group.scale({ x: 1, y: 1 });
-        });
+        Car.addShapeListeners(group);
     }
 }

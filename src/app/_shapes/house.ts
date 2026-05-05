@@ -20,7 +20,7 @@ export class House implements CustomShape {
     this.y = y;
   }
 
-  addShapeListeners(group: Konva.Group): void {
+  static addShapeListeners(group: Konva.Group): void {
     group.off('mouseenter');
     group.off('mouseleave');
     group.on('mouseenter', () => {
@@ -29,6 +29,10 @@ export class House implements CustomShape {
     group.on('mouseleave', () => {
       group.scale( { x: 1, y: 1 });
     })
+  }
+
+  addShapeListeners(group: Konva.Group): void {
+    House.addShapeListeners(group);
   }
 
   draw(layer: Konva.Layer): Konva.Group {

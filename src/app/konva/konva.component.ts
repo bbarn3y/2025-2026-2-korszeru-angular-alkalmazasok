@@ -10,6 +10,7 @@ import {NzContextMenuService, NzDropdownMenuComponent, NzDropdownModule} from 'n
 import {Car} from '../_shapes/car';
 import {NzRadioComponent, NzRadioGroupComponent} from 'ng-zorro-antd/radio';
 import {FormsModule} from '@angular/forms';
+import {GenerateWorkerEvent} from '../_models/worker';
 
 @Component({
   selector: 'app-konva',
@@ -40,42 +41,131 @@ export class KonvaComponent implements AfterViewInit {
   selectedLayerIndex = 0;
   stage?: Konva.Stage;
   transformer?: Konva.Transformer;
+  worker?: Worker;
 
   ngAfterViewInit() {
-    this.stage = new Konva.Stage({
-      // container: 'konva-container',
-      container: this.konvaContainer().nativeElement,
-      width: window.innerWidth,
-      height: window.innerHeight
+    // this.stage = new Konva.Stage({
+    //   // container: 'konva-container',
+    //   container: this.konvaContainer().nativeElement,
+    //   width: window.innerWidth,
+    //   height: window.innerHeight
+    // })
+    //
+    // const layer1 = new Konva.Layer();
+    // const layer2 = new Konva.Layer();
+    // this.stage.add(layer1, layer2);
+    //
+    // this.selectedLayer = this.stage.getLayers()[0];
+    //
+    // this.transformer = new Konva.Transformer();
+    // this.selectedLayer.add(this.transformer);
+    //
+    // const rect = new Konva.Rect({
+    //   x: 50,
+    //   y: 100,
+    //   width: 200,
+    //   height: 75,
+    //   fill: 'aqua',
+    //   stroke: '#F2F2F2',
+    //   strokeWidth: 5,
+    //   draggable: true
+    // })
+    // this.selectedLayer.add(rect);
+    //
+    // const house = new House(100, 200, 50, 75, true);
+    // house.draw(this.selectedLayer);
+    //
+    // this.transformer.nodes([rect]);
+    //
+    // this.addStageEventListener();
+
+    this.loadState();
+
+    this.worker = new Worker(new URL('../_workers/konva.worker.ts', import.meta.url))
+
+    this.worker.postMessage('test message');
+
+    this.worker.onerror = ( (error) => {
+      console.log('Main thread received an error', error);
     })
 
-    const layer1 = new Konva.Layer();
-    const layer2 = new Konva.Layer();
-    this.stage.add(layer1, layer2);
+    this.worker.onmessage = ( ({data}) => {
+      console.log('Main thread received a message', data);
+    })
+  }
 
-    this.selectedLayer = this.stage.getLayers()[0];
+  generateShapes() {
+    this.worker?.postMessage(new GenerateWorkerEvent(10));
+  }
+
+  saveState() {
+    if (this.stage) {
+      const json = this.stage.toJSON();
+      localStorage.setItem('canvasState', json);
+    }
+  }
+
+  loadState() {
+    const savedJson = localStorage.getItem('canvasState');
+    if (savedJson) {
+      this.stage = Konva.Node.create(savedJson, this.konvaContainer().nativeElement);
+      if (!this.stage) return;
+      this.selectedLayer = this.stage.getLayers()[0];
+      this.stage?.getLayers().forEach((layer, index) => {
+        layer.listening(index === 0);
+      })
+    } else {
+      this.stage = new Konva.Stage({
+        // container: 'konva-container',
+        container: this.konvaContainer().nativeElement,
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
+
+      const layer1 = new Konva.Layer();
+      const layer2 = new Konva.Layer();
+      this.stage.add(layer1, layer2);
+
+      this.selectedLayer = this.stage.getLayers()[0];
+
+      const rect = new Konva.Rect({
+        x: 50,
+        y: 100,
+        width: 200,
+        height: 75,
+        fill: 'aqua',
+        stroke: '#F2F2F2',
+        strokeWidth: 5,
+        draggable: true
+      })
+      this.selectedLayer.add(rect);
+
+      const house = new House(100, 200, 50, 75, true);
+      house.draw(this.selectedLayer);
+    }
 
     this.transformer = new Konva.Transformer();
     this.selectedLayer.add(this.transformer);
 
-    const rect = new Konva.Rect({
-      x: 50,
-      y: 100,
-      width: 200,
-      height: 75,
-      fill: 'aqua',
-      stroke: '#F2F2F2',
-      strokeWidth: 5,
-      draggable: true
-    })
-    this.selectedLayer.add(rect);
-
-    const house = new House(100, 200, 50, 75, true);
-    house.draw(this.selectedLayer);
-
-    this.transformer.nodes([rect]);
-
     this.addStageEventListener();
+    this.rebindShapeListener();
+  }
+
+  rebindShapeListener() {
+    this.stage?.find('Group').forEach((node) => {
+      if (!(node instanceof Konva.Group)) return;
+
+      const shapeType = node.getAttr('shapeType');
+
+      switch (shapeType) {
+        case ShapeType.CAR:
+          Car.addShapeListeners(node);
+          break;
+        case ShapeType.HOUSE:
+          House.addShapeListeners(node);
+          break;
+      }
+    })
   }
 
   addStageEventListener() {
@@ -243,6 +333,14 @@ export class KonvaComponent implements AfterViewInit {
   selectedLayerIndexChanged(layerIndex: number) {
     if (!this.stage) return;
     this.selectedLayer = this.stage.getLayers()[layerIndex];
+
+    this.stage.getLayers().forEach((layer, i) => {
+      layer.listening(layerIndex === i);
+    })
+
+    this.transformer?.destroy();
+    this.transformer = new Konva.Transformer();
+    this.selectedLayer.add(this.transformer);
   }
 
   protected readonly EditorMode = EditorMode;

@@ -1,4 +1,7 @@
 <nz-card>
+  <button nz-button (click)="saveState()">Save</button>
+  <button nz-button (click)="generateShapes()">Generate</button>
+
   <nz-radio-group [(ngModel)]="selectedLayerIndex"
                   (ngModelChange)="selectedLayerIndexChanged($event)">
     <label nz-radio-button [nzValue]="0">1</label>
