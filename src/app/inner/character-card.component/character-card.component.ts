@@ -1,5 +1,5 @@
 import {Component, inject, input, Input, output} from '@angular/core';
-import {Character, CharacterClass} from '../../_models/character.model';
+import {Character, CharacterClass} from '@models/character.model';
 import {CharacterEditorComponent} from '../character-editor.component/character-editor.component';
 import {NzModalService} from 'ng-zorro-antd/modal';
 import {CharacterService} from '../../_services/character.service';

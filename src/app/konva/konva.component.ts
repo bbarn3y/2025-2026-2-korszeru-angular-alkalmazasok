@@ -10,7 +10,7 @@ import {NzContextMenuService, NzDropdownMenuComponent, NzDropdownModule} from 'n
 import {Car} from '../_shapes/car';
 import {NzRadioComponent, NzRadioGroupComponent} from 'ng-zorro-antd/radio';
 import {FormsModule} from '@angular/forms';
-import {GenerateWorkerEvent} from '../_models/worker';
+import {GenerateWorkerEvent, ShapesChangedWorkEvent, WorkerEventType} from '../_models/worker';
 
 @Component({
   selector: 'app-konva',
@@ -91,7 +91,37 @@ export class KonvaComponent implements AfterViewInit {
 
     this.worker.onmessage = ( ({data}) => {
       console.log('Main thread received a message', data);
+
+      if (data.type === WorkerEventType.SHAPES_CHANGED) {
+        const shapesChangedWorkEvent = data as ShapesChangedWorkEvent;
+        shapesChangedWorkEvent.addedShapes?.forEach((shape) => {
+          this.addNewShapeFromJSON(shape);
+        })
+        shapesChangedWorkEvent.changedShapes?.forEach((shape) => {
+          this.changeNewShapeFromJSON(shape);
+        })
+      }
     })
+  }
+
+  addNewShapeFromJSON(shapeJSON: string) {
+    const shape = Konva.Node.create(JSON.parse(shapeJSON));
+    if (shape instanceof Konva.Shape || shape instanceof Konva.Group) {
+      this.selectedLayer?.add(shape);
+    }
+  }
+
+  changeNewShapeFromJSON(shapeJSON: string) {
+    const shape = Konva.Node.create(JSON.parse(shapeJSON));
+
+    const matchingShape =
+      this.selectedLayer?.children?.find((child) => child.attrs.elementId === shape.attrs.elementId);
+    if (matchingShape && matchingShape instanceof Konva.Shape) {
+      const keys = Object.keys(shape.attrs);
+      keys.forEach(key => {
+        matchingShape.setAttr(key, shape.attrs[key]);
+      })
+    }
   }
 
   generateShapes() {
